@@ -65,6 +65,8 @@ export function WalletMenu() {
     );
   }
 
+  const copyAddress = hideBalances ? maskAmount(address || "") : (address || "");
+
   return (
     <>
       <DropdownMenu>
@@ -85,7 +87,7 @@ export function WalletMenu() {
           <DropdownMenuItem asChild>
             <div className="flex w-full cursor-pointer items-center px-2 py-1.5 hover:bg-accent hover:text-accent-foreground">
               <CopyableText 
-                text={address || ""} 
+                text={copyAddress} 
                 className="w-full justify-between px-0 py-0 hover:bg-transparent" 
               />
             </div>

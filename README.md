@@ -1,6 +1,33 @@
 # Predictify
 
-A decentralized prediction market platform built on the Stellar blockchain. Predictify enables users to create and participate in prediction markets on virtually any verifiable future event, from sports to politics to financial outcomes. All predictions and outcomes are transparently recorded on-chain with instant, automated payouts through smart contracts.
+> Decentralized prediction markets on Stellar / Soroban.
+
+**Live demo:** https://predictify-frontend-livid.vercel.app | **Docs:** `/docs` route and [docs/](docs/) | [Contracts repo](https://github.com/Predictify-org/predictify-contracts)
+
+[![CI](https://github.com/Predictify-org/predictify-frontend/actions/workflows/ci.yml/badge.svg)](https://github.com/Predictify-org/predictify-frontend/actions/workflows/ci.yml)
+
+## What you can do
+
+Browse prediction markets, place bets, track active positions, dispute outcomes, claim winnings and connect a Stellar wallet (Freighter, LOBSTR, xBull, Albedo, Rabet). Key routes: `/` landing, `/markets`, `/bets`, `/claims`, `/dashboard`, `/predictions`, `/leaderboard`, `/disputes`, `/help`, `/docs`.
+
+## Scripts
+
+| Command | Purpose |
+| --- | --- |
+| `pnpm dev` | Start dev server |
+| `pnpm build` / `pnpm start` | Production build / serve |
+| `pnpm type-check` | TypeScript check (excludes test files) |
+| `pnpm test` | Jest unit tests |
+
+CI (`.github/workflows/ci.yml`) runs install, type-check, tests and build on every push and PR.
+
+## Architecture
+
+Next.js 15 App Router (`app/`), shared UI in `components/` (Radix + Tailwind), state in Zustand stores (`app/state`) and React context (`context/`), Stellar/Soroban helpers in `lib/stellar`. More in [docs/](docs/) and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+## Deployment
+
+Deploy with `vercel --prod` (Vercel project `predictify-frontend-live` is linked). No secrets are required (all `NEXT_PUBLIC_*` variables have defaults).
 
 ## About
 
@@ -12,8 +39,10 @@ Built with Next.js 15, React 19, TypeScript, and the Stellar Wallets Kit, Predic
 
 - **Decentralized & Transparent**: All predictions are recorded on-chain with complete transparency. No central authority controls the outcomes.
 - **Shareable Prediction Receipts**: Completed predictions can now be shared with a polished receipt summary for campaigns such as GrantFox FWC26.
+- **Profile Loading Parity**: Profile loading skeleton now mirrors profile card height, spacing, and shape to reduce first-paint layout jump.
 - **Instant Payouts**: Smart contracts automatically distribute winnings immediately after event resolution. No waiting periods.
 - **Multi-Wallet Support**: Connect with your preferred Stellar wallet (Freighter, LOBSTR, XBull, Albedo, Rabet).
+- **Accessibility First**: WCAG 2.1 AA compliant with reduced-motion support, high contrast themes, and comprehensive screen reader accessibility.
 - **Real-Time Markets**: Access live prediction markets with real-time updates on odds, stakes, and participant activity.
 - **Side-by-Side Market Comparison**: Compare up to two selected prediction markets in a responsive modal with accessible keyboard and focus support.
 - **Advanced Analytics**: Track your prediction performance with detailed analytics and insights.
@@ -225,6 +254,8 @@ Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
 
 ## Documentation
 
+- **[Reduced-Motion Patterns](./docs/REDUCED_MOTION_PATTERNS.md)** - Comprehensive guide to implementing accessibility-compliant reduced-motion patterns
+- **[Reduced-Motion Quick Reference](./docs/REDUCED_MOTION_QUICK_REFERENCE.md)** - Quick reference for developers implementing reduced-motion support
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Stellar Documentation](https://developers.stellar.org/)
 - [Stellar Wallets Kit](https://github.com/creit-tech/stellar-wallets-kit)

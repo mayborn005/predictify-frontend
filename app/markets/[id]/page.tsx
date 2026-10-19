@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
+import { AboutMarketModal } from "@/app/components/AboutMarketModal";
+import PredictionCommentsLoader from "@/app/components/PredictionCommentsLoader";
+import { MarketDetailClient } from "./MarketDetailClient";
 import MarketHero from "./hero";
+import { Tabs } from "@/app/components/Tabs";
 
 /**
  * Market Detail Page — Server Component
@@ -117,7 +121,7 @@ export async function generateMetadata({
 // ---------------------------------------------------------------------------
 
 import { EmptyState } from "@/components/EmptyState";
-import { AboutMarketModal } from "@/app/components/AboutMarketModal";
+import { SearchX } from "lucide-react";
 
 export default async function MarketDetailPage({ params }: PageProps) {
   const { id } = await params;
@@ -125,20 +129,21 @@ export default async function MarketDetailPage({ params }: PageProps) {
 
   if (!market) {
     return (
-      <main className="container mx-auto max-w-3xl px-4 py-8">
+      <main className="container mx-auto max-w-3xl px-4 py-8 sm:px-6">
         <div id="main-content" tabIndex={-1} className="outline-none" />
         <EmptyState
           title="Market Not Found"
-          description="We couldn't find the prediction market you're looking for. It may have been resolved, cancelled, or never existed."
-          ctaText="Back to Markets"
+          description="We couldn't find the prediction market you're looking for. It may have been resolved, cancelled, or never existed. Try browsing our active markets or create your own."
+          ctaText="Browse Markets"
           ctaHref="/events"
+          icon={SearchX}
         />
       </main>
     );
   }
 
   return (
-    <main className="container mx-auto max-w-3xl px-4 py-8">
+    <main className="container mx-auto max-w-3xl px-4 py-8 sm:px-6">
       {/* Skip-to-content target */}
       <div id="main-content" tabIndex={-1} className="outline-none" />
 
@@ -155,13 +160,96 @@ export default async function MarketDetailPage({ params }: PageProps) {
           { label: "No", probability: 100 - market.probability },
         ]}
         isGrantFoxCampaign={market.isGrantFoxCampaign}
-        aboutModalTrigger={<AboutMarketModal market={market} />}
+        aboutModalTrigger={
+          <AboutMarketModal market={market} showOracleStatus />
+        }
       />
 
       {/*
-       * Additional page content (bet form, tabs, timeline, etc.)
-       * would follow here — outside the scope of this hero component.
+       * Market detail tabs — roving-tabindex primitive (GrantFox FWC26).
+       *
+       * Uses app/components/Tabs rather than the Radix-backed shadcn tabs so
+       * that keyboard focus management is fully explicit and auditable.
+       *
+       * Tab panel content is intentionally left as descriptive placeholders
+       * here; real panels (BetForm, ActivityTimeline, etc.) are wired in
+       * follow-up tasks once the primitive is approved.
        */}
+      <section aria-label="Market detail sections" className="mt-6 sm:mt-8">
+        <Tabs
+          aria-label="Market detail sections"
+          defaultValue="overview"
+          tabs={[
+            {
+              value: "overview",
+              label: "Overview",
+              content: (
+                <div className="text-sm text-muted-foreground">
+                  <p>
+                    Market overview, probability breakdown, and resolution
+                    criteria will be displayed here.
+                  </p>
+                </div>
+              ),
+            },
+            {
+              value: "activity",
+              label: "Activity",
+              content: (
+                <div className="text-sm text-muted-foreground">
+                  <p>
+                    Recent bets and participant activity for this market will
+                    appear here.
+                  </p>
+                </div>
+              ),
+            },
+            {
+              value: "resolution",
+              label: "Resolution",
+              content: (
+                <div className="text-sm text-muted-foreground">
+                  <p>
+                    Resolution criteria, oracle sources, and outcome verification
+                    details will be displayed here.
+                  </p>
+                </div>
+              ),
+            },
+            {
+              value: "timeline",
+              label: "Timeline",
+              content: (
+                <div className="text-sm text-muted-foreground">
+                  <p>
+                    The full market lifecycle timeline — from creation through
+                    resolution — will be shown here.
+                  </p>
+                </div>
+              ),
+            },
+          ]}
+        />
+      </section>
+
+      {/*
+       * Keyboard shortcut hints + listeners (client component).
+       * Rendered below the tabs so it doesn't interrupt the reading flow.
+       * Hidden on touch devices and narrow viewports automatically.
+       */}
+      {/*
+       * Per-prediction comment thread mini-UI (GrantFox FWC26 — issue #342).
+       * Collapsible section below the tabs; keeps the core market hero/tabs
+       * uncluttered while still surfacing community discussion.
+       */}
+      <div className="mt-6">
+        <PredictionCommentsLoader predictionId={market.id} />
+      </div>
+
+      <MarketDetailClient
+        marketTitle={market.title}
+        marketId={market.id}
+      />
     </main>
   );
 }

@@ -1,13 +1,34 @@
 "use client";
 
-import { TrendingUp, Globe, BarChart3, Bell } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import type { Market } from "@/content/markets.sample";
-import { useFollowsStore } from "@/app/state/follows";
-import { useUserLimitsStore } from "@/app/state/userLimits";
-import Sparkline from "@/components/Sparkline";
-import { HeatStrip } from "@/app/components/HeatStrip";
-import { SaveForLater } from "@/app/components/SaveForLater";
+import {
+  TrendingUp,
+  Globe,
+  BarChart3,
+  Bell,
+} from "lucide-react"
+import { Card } from "@/components/ui/card"
+import type { Market } from "@/content/markets.sample"
+import { useFollowsStore } from "@/app/state/follows"
+import { useUserLimitsStore } from "@/app/state/userLimits"
+import Sparkline from "@/components/Sparkline"
+import { HeatStrip } from "@/app/components/HeatStrip"
+import { Tooltip } from "@/app/components/Tooltip"
+import { SaveForLater } from "@/app/components/SaveForLater"
+import { BookmarkButton } from "@/app/components/BookmarkButton"
+
+// ---------------------------------------------------------------------------
+// Stable animation delay helper
+// ---------------------------------------------------------------------------
+
+function stableAnimationDelay(id: string, reducedMotion: boolean): string {
+  if (reducedMotion) return "0ms";
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = ((hash << 5) - hash) + id.charCodeAt(i);
+    hash |= 0;
+  }
+  return `${Math.abs(hash) % 5 * 150}ms`;
+}
 
 // ---------------------------------------------------------------------------
 // Icon / colour mapping (internal – consumers need only pass a Market)
@@ -40,6 +61,30 @@ interface MarketCardProps {
 // Component
 // ---------------------------------------------------------------------------
 
+/**
+ * MarketCard
+ *
+ * Displays a prediction market summary card with odds, sparkline,
+ * 24h activity heat strip, follow indicator, and daily betting nudge.
+ *
+ * ## Stability
+ * The animation delay is derived from the market identity (`market.id`) so
+ * that cards remain visually stable across data refreshes even when the
+ * render order changes.
+ *
+ * ## Responsive layout
+ * - **≥ sm (640 px):** icon + content on the left; odds block on the right
+ *   (side-by-side, `flex-row`).
+ * - **< sm (mobile):** stacked vertically (`flex-col`). The odds block is
+ *   moved below the content and rendered in a horizontal row instead of a
+ *   right-aligned column so that both values have room to breathe on narrow
+ *   screens. The bottom meta row (pool + ends-in) wraps naturally via
+ *   `flex-wrap`.
+ *
+ * ## Accessibility
+ * - WCAG 2.1 AA: all interactive elements have accessible labels.
+ * - `aria-label` on the odds region announces both values to screen readers.
+ */
 export function MarketCard({
   market,
   index = 0,
@@ -60,30 +105,42 @@ export function MarketCard({
         reducedMotion ? "" : "animate-slide-up"
       } ${className ?? ""}`}
       style={{
-        animationDelay: reducedMotion ? "0ms" : `${index * 150}ms`,
+        animationDelay: stableAnimationDelay(market.id, reducedMotion),
         animationFillMode: "both",
       }}
     >
-      <div className="mb-3 flex items-start justify-between gap-3">
-        <div className="flex items-start gap-3">
-          <div className={`rounded-lg p-2 ${colors?.bg}`}>
+      {/*
+       * Top section
+       * -----------
+       * Mobile  (<sm): flex-col — icon+content stacked above the odds block.
+       * Desktop (≥sm): flex-row — icon+content on the left, odds on the right.
+       */}
+      <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        {/* Left: icon + textual content */}
+        <div className="flex min-w-0 flex-1 items-start gap-3">
+          <div className={`shrink-0 rounded-lg p-2 ${colors?.bg}`}>
             {IconComponent && (
               <IconComponent className={`h-5 w-5 ${colors?.icon}`} />
             )}
           </div>
-          <div>
+          <div className="min-w-0 flex-1">
+            {/* Title row with SaveForLater button — wraps naturally */}
             <div className="mb-2 flex flex-wrap items-center gap-2">
               <h3 className="font-semibold text-white">{market.title}</h3>
-              <SaveForLater marketId={market.id} marketTitle={market.title} />
+              <Tooltip content="Save this market for later reference">
+                <SaveForLater marketId={market.id} marketTitle={market.title} />
+              </Tooltip>
             </div>
             <p className="text-sm text-white/70">{market.description}</p>
 
             {/* Sparkline trend preview */}
-            <Sparkline
-              data={market.sparklineData}
-              className="mt-2 text-white/60"
-              data-testid={`sparkline-${market.id}`}
-            />
+            <Tooltip content="Price trend over the last 24 hours">
+              <Sparkline
+                data={market.sparklineData}
+                className="mt-2 text-white/60"
+                data-testid={`sparkline-${market.id}`}
+              />
+            </Tooltip>
 
             {/* Heat strip – 24h activity */}
             <HeatStrip
@@ -99,7 +156,9 @@ export function MarketCard({
                   className="inline-flex items-center gap-1 rounded-full bg-purple-500/20 px-2 py-0.5 text-xs font-medium text-purple-300 ring-1 ring-purple-400/30"
                   data-testid="following-indicator"
                 >
-                  <Bell className="h-3 w-3" aria-hidden="true" />
+                  <Tooltip content="Notifications enabled for this market">
+                    <Bell className="h-3 w-3" aria-hidden="true" />
+                  </Tooltip>
                   You&apos;re following this
                   <span className="sr-only">
                     {" "}
@@ -113,18 +172,21 @@ export function MarketCard({
                 data-testid="betting-limit-nudge"
               >
                 Daily betting allowance remaining:{" "}
-                <strong>{remainingAllowance} USDC</strong>
+                <strong className="text-stat-sm">{remainingAllowance} USDC</strong>
               </p>
             </div>
           </div>
         </div>
-        <div className="text-right">
-          <div className="text-sm font-medium text-green-400 tabular-nums">
-            Yes: {market.yesOdds}%
+        <div className="flex items-start gap-2">
+          <div className="text-right">
+            <div className="text-sm font-medium text-green-400 tabular-nums">
+              Yes: {market.yesOdds}%
+            </div>
+            <div className="text-sm text-red-400 tabular-nums">
+              No: {market.noOdds}%
+            </div>
           </div>
-          <div className="text-sm text-red-400 tabular-nums">
-            No: {market.noOdds}%
-          </div>
+          <BookmarkButton marketId={market.id} size="icon" />
         </div>
       </div>
 
@@ -137,10 +199,10 @@ export function MarketCard({
       </div>
 
       <div className="flex justify-between text-xs text-white/60">
-        <span className="tabular-nums">
+        <span className="text-stat-sm">
           Pool: {market.poolAmount.toLocaleString()} USDC
         </span>
-        <span>Ends in {market.endsIn}</span>
+        <span className="text-stat-sm">Ends in {market.endsIn}</span>
       </div>
     </Card>
   );

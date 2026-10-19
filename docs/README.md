@@ -21,7 +21,32 @@ Complete documentation for the virtualized and infinite scroll list implementati
   - Verified vs. partial follow-up status
   - Evidence paths for recent component work
 
+### Accessibility & Motion
+- **[REDUCED_MOTION_PATTERNS.md](./REDUCED_MOTION_PATTERNS.md)** - Comprehensive reduced-motion implementation guide
+  - CSS media query rules and React hook integration
+  - Four implementation patterns with code examples
+  - WCAG 2.1 compliance and testing strategies
+  - Performance considerations and browser support
+- **[REDUCED_MOTION_QUICK_REFERENCE.md](./REDUCED_MOTION_QUICK_REFERENCE.md)** - Developer quick reference
+  - Common patterns and code snippets
+  - Testing checklist and debugging tips
+  - Component integration checklist
+- **[DASHBOARD_REDUCED_MOTION.md](./DASHBOARD_REDUCED_MOTION.md)** - Dashboard-specific reduced motion implementation
+- **[COUNTDOWN_REDUCED_MOTION.md](./COUNTDOWN_REDUCED_MOTION.md)** - Timer component reduced motion patterns
+- **[WALLET_REDUCED_MOTION.md](./WALLET_REDUCED_MOTION.md)** - Wallet interaction accessibility patterns
+
+### Components
+
+- **[MARKET_CARD_MOBILE_LAYOUT.md](./MARKET_CARD_MOBILE_LAYOUT.md)** - MarketCard mobile-breakpoint layout
+  - Responsive layout changes for narrow viewports (< 640 px)
+  - Tailwind classes reference for the stacked/side-by-side breakpoint behaviour
+  - Accessibility considerations (aria-label, truncation, dark mode)
+  - Test strategy and how to run focused tests
+
 ### Core Features
+- **[EVENTS_RESPONSIVE_LAYOUT.md](./EVENTS_RESPONSIVE_LAYOUT.md)** - Events results responsive-layout contract
+  - One-column narrow layout, two-column tablet layout, and desktop table
+  - Accessibility, theme-token, and manual verification notes
 - **[WALLET.md](./WALLET.md)** - Wallet Integration Guide
   - Supported wallets (Freighter, LOBSTR, XBull, Albedo, Rabet)
   - SSR-safe wallet kit initialization
@@ -30,6 +55,11 @@ Complete documentation for the virtualized and infinite scroll list implementati
   - Persistence and automatic reconnection
   - Network configuration
   - Known limitations and troubleshooting
+
+- **[MARKET_PREVIEW_CARD.md](./MARKET_PREVIEW_CARD.md)** - Market preview card component
+  - Hover & focus-triggered market details preview card
+  - Key details overview: odds, pool size, sparkline, 24h heat strip, allowance nudge, quick actions
+  - Keyboard equivalent & WCAG 2.1 AA accessibility
 
 - **[ONBOARDING_TOUR.md](./ONBOARDING_TOUR.md)** - Onboarding tour overlay
   - Controlled `OnboardingTour` API (`steps`, `open`, `onStepChange`)
@@ -237,6 +267,70 @@ See [infinite-scroll-ux.md#memory-budget--performance](./infinite-scroll-ux.md#m
 - ✅ Empty state descriptions
 
 See [infinite-scroll-ux.md#accessibility](./infinite-scroll-ux.md#accessibility) for complete accessibility documentation.
+
+## Complete Index
+
+Every retained document in this directory is listed below.
+
+- [Accessibility audit status](./a11y-status.md)
+- [Activity timeline delivery notes](./ACTIVITY_TIMELINE_DELIVERY.md)
+- [Activity timeline design patterns](./ACTIVITY_TIMELINE_DESIGN.md)
+- [Activity timeline visual patterns](./ACTIVITY_TIMELINE_PATTERNS.md)
+- [API integration guide](./API.md)
+- [Architecture overview](./ARCHITECTURE.md)
+- [Breadcrumbs](./BREADCRUMBS.md)
+- [Button order](./BUTTON_ORDER.md)
+- [Color-blind outcomes implementation](./COLORBLIND_OUTCOMES_IMPLEMENTATION.md)
+- [Color-blind outcomes quick reference](./COLORBLIND_QUICK_REFERENCE.md)
+- [Copy address](./COPY_ADDRESS.md)
+- [Countdown reduced motion](./COUNTDOWN_REDUCED_MOTION.md)
+- [Dashboard mobile layout](./DASHBOARD_MOBILE_LAYOUT.md)
+- [Dashboard reduced motion](./DASHBOARD_REDUCED_MOTION.md)
+- [Density](./density.md)
+- [Design references](./Design.md)
+- [Screen accessibility checklist](./DESIGN_ACCESSIBILITY_CHECKLIST.md)
+- [Mobile portfolio quick actions](./DESIGN_MOBILE_PORTFOLIO_QUICK_ACTIONS.md)
+- [Sticky action panel](./DESIGN_STICKY_ACTION_PANEL.md)
+- [Document titles](./DOCUMENT_TITLES.md)
+- [Events grid](./events-grid.md)
+- [Events responsive layout](./EVENTS_RESPONSIVE_LAYOUT.md)
+- [External links](./EXTERNAL_LINKS.md)
+- [Heat strip](./HEAT_STRIP.md)
+- [High-contrast theme](./HIGH_CONTRAST_THEME.md)
+- [Implementation checklist](./IMPLEMENTATION_CHECKLIST.md)
+- [Infinite scroll implementation summary](./IMPLEMENTATION_SUMMARY.md)
+- [Infinite scroll UX](./infinite-scroll-ux.md)
+- [Installation](./INSTALLATION.md)
+- [Marketing cursor effects](./marketing-cursor-effects.md)
+- [Market card mobile layout](./MARKET_CARD_MOBILE_LAYOUT.md)
+- [Market detail tokens](./MARKET_DETAIL_TOKENS.md)
+- [Market hero](./MARKET_HERO.md)
+- [Market preview card](./MARKET_PREVIEW_CARD.md)
+- [Wallet microcopy](./microcopy-wallet.md)
+- [Notification digest](./notification-digest.md)
+- [Onboarding tour](./ONBOARDING_TOUR.md)
+- [Predictions empty state](./PREDICTIONS_EMPTY_STATE.md)
+- [Prediction comments](./PREDICTION_COMMENTS.md)
+- [Print receipt](./PRINT_RECEIPT.md)
+- [Quickstart](./QUICKSTART.md)
+- [Quiet hours](./quiet-hours.md)
+- [Recently viewed](./RECENTLY_VIEWED.md)
+- [Recommendation provenance and 404](./recommendation-provenance-and-404.md)
+- [Recommendations](./RECOMMENDATIONS.md)
+- [Reduced-motion patterns](./REDUCED_MOTION_PATTERNS.md)
+- [Reduced-motion quick reference](./REDUCED_MOTION_QUICK_REFERENCE.md)
+- [Search input](./SEARCH_INPUT.md)
+- [Getting started checklist](./STARTED_CHECKLIST.md)
+- [Success confetti](./SUCCESS_CONFETTI.md)
+- [Tabs](./TABS.md)
+- [Trending rail](./TRENDING_RAIL.md)
+- [Typography system](./TYPOGRAPHY.md)
+- [Typography implementation guide](./TYPOGRAPHY_IMPLEMENTATION.md)
+- [Typography testing guide](./TYPOGRAPHY_TESTING.md)
+- [Wallet integration](./WALLET.md)
+- [Wallet reduced motion](./WALLET_REDUCED_MOTION.md)
+- [What's new](./WHATS_NEW.md)
+- [Infinite scroll screenshot guide](./screenshots/infinite-scroll/README.md)
 
 ## 🐛 Troubleshooting
 

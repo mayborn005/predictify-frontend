@@ -52,12 +52,12 @@ export default function ProfilePage() {
       <Card>
         <CardContent className="flex items-center gap-6 py-4">
           <Link href="#followers" className="flex items-center gap-1.5 text-sm hover:underline">
-            <span className="font-semibold text-foreground">128</span>
+            <span data-numeric="true" className="font-semibold text-foreground tabular-nums">128</span>
             <span className="text-muted-foreground">Followers</span>
           </Link>
           <Separator orientation="vertical" className="h-4" />
           <Link href="#following" className="flex items-center gap-1.5 text-sm hover:underline">
-            <span className="font-semibold text-foreground">64</span>
+            <span data-numeric="true" className="font-semibold text-foreground tabular-nums">64</span>
             <span className="text-muted-foreground">Following</span>
           </Link>
         </CardContent>
@@ -80,7 +80,12 @@ export default function ProfilePage() {
 
               <div className="flex items-center gap-4">
                 <Avatar className="h-20 w-20">
-                  <AvatarImage src="/placeholder.svg?height=80&width=80" alt="Avatar" />
+                  <AvatarImage
+                    src="/placeholder.svg?height=80&width=80"
+                    srcSet="/placeholder.svg?height=40&width=40 40w, /placeholder.svg?height=80&width=80 80w, /placeholder.svg?height=160&width=160 160w"
+                    sizes="80px"
+                    alt="Avatar"
+                  />
                   <AvatarFallback>AD</AvatarFallback>
                 </Avatar>
                 <div>

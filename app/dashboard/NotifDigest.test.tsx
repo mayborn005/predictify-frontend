@@ -39,7 +39,9 @@ describe("NotifDigest", () => {
     expect(
       screen.getByRole("button", { name: /notifications, 12 unread/i })
     ).toBeInTheDocument()
-    expect(screen.getByText("9+")).toBeInTheDocument()
+    const badge = screen.getByText("9+")
+    expect(badge).toBeInTheDocument()
+    expect(badge).toHaveClass("tabular-nums")
   })
 
   it("lists notifications newest-first when the panel is opened", async () => {
@@ -111,5 +113,16 @@ describe("NotifDigest", () => {
     render(<NotifDigest notifications={[makeNotification()]} />)
     const status = screen.getByRole("status")
     expect(status).toHaveAttribute("aria-live", "polite")
+  })
+
+  it("applies focus-visible ring styles to notification items for keyboard navigation", async () => {
+    const user = userEvent.setup()
+    render(<NotifDigest notifications={[makeNotification()]} />)
+
+    await user.click(screen.getByRole("button", { name: /notifications, 1 unread/i }))
+    const notificationButton = await screen.findByText("Market closing soon")
+    expect(notificationButton.closest("button")).toHaveClass("focus-visible:ring-2")
+    expect(notificationButton.closest("button")).toHaveClass("focus-visible:ring-ring")
+    expect(notificationButton.closest("button")).toHaveClass("focus-visible:ring-offset-2")
   })
 })

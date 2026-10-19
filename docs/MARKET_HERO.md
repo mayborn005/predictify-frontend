@@ -157,7 +157,9 @@ Enabled via Tailwind's `class`-based dark mode strategy (configured in `tailwind
 The hero is single-column at all breakpoints. Responsive behaviour is handled via:
 
 - `text-h1-responsive` — fluid heading size via `sm:` / `md:` / `lg:` prefixes (defined in `app/globals.css`). Scales: `text-2xl` → `sm:text-3xl` → `md:text-4xl` → `lg:text-h1`.
-- `flex-wrap gap-x-6 gap-y-3` on the stat strip — pills wrap naturally on narrow screens.
+- `flex flex-col sm:flex-row sm:flex-wrap` on the stat strip — pills stack vertically on mobile (< 640 px) for easy scanning, and flow horizontally on sm+ (≥ 640 px) via `sm:flex-row`. Vertical gap `gap-3` on mobile, horizontal gap `gap-x-6` on desktop.
+- `gap-y-1.5` on the labels row — when badges/categories wrap to a new line on very narrow screens, the vertical gap remains visually consistent.
+- `overflow-hidden text-ellipsis` on stat value spans — prevents long formatted values from overflowing on extremely narrow viewports.
 - `line-clamp-3` on the description — prevents the hero from becoming too tall on small screens.
 
 ### Accessibility (WCAG 2.1 AA)
@@ -169,9 +171,31 @@ The hero is single-column at all breakpoints. Responsive behaviour is handled vi
 | Probability bar | Visible bar is `aria-hidden`; a `role="progressbar"` element with `aria-valuenow/min/max` and `aria-label` is `sr-only` |
 | Share button | `aria-label="Share this market"` for unambiguous announcement |
 | StatusBadge | Delegates to the repo's `StatusBadge` which has `role="status"` and `aria-describedby` wired to an `sr-only` description |
-| Live region | A `role="status" aria-live="polite"` element announces volume and participant counts to assistive technology when they change |
+| Live region | A `role="status" aria-live="polite"` element announces market **status changes** (e.g. `open` → `closing_soon` → `closed` → `resolved`, or → `cancelled`), along with volume and participant counts, to assistive technology whenever any of them change (issue #495) |
 | Tabular numerals | All visible figures (volume, participants, countdown, outcome %) use `font-variant-numeric: tabular-nums` so they stay column-aligned with each other and across re-renders (Issue #556) |
+| Reduced motion | The `transition-[width]` animation on the probability bar is disabled via `motion-reduce:transition-none` when `prefers-reduced-motion: reduce` is active |
 | Icons | All Lucide icons carry `aria-hidden="true"` |
+
+### Status-change announcements (issue #495)
+
+`MarketHero` renders a `LiveRegion` (`components/ui/live-region.tsx`) at the end of its markup:
+
+```tsx
+<LiveRegion
+  message={[
+    `Market status is ${status.replace('_', ' ')}.`,
+    volume && `Market volume: ${volume}.`,
+    participants != null && `${participants.toLocaleString()} participants.`
+  ].filter(Boolean).join(" ")}
+/>
+```
+
+This renders a visually-hidden (`sr-only`) `role="status"` / `aria-live="polite"` / `aria-atomic="true"` element. Key behavior:
+
+- **Re-announces on every status transition.** Whenever the `status` prop changes on an already-mounted hero — e.g. a poll or websocket update moves the market from `open` → `closing_soon` → `closed` → `resolved`, or to `cancelled` from any state — the region's text is cleared and re-populated after a short (50ms) delay so assistive technology reliably announces the new value instead of missing rapid back-to-back updates.
+- **Debounced, not instant.** The clear-then-set pattern exists so that if the computed message string is ever identical across two updates, screen readers still register it as a change (rather than a no-op) — while genuinely unrelated re-renders that produce the *same* message string do not cause repeated, noisy re-announcements.
+- **Bundles related state.** Volume and participant counts are announced in the same utterance as the status, so a single SR announcement communicates the full picture of "what changed" instead of firing three separate live-region updates.
+- Covered in `app/markets/[id]/__tests__/hero.test.tsx` (see "MarketDetail status-change announcements (issue #495)") and unit-tested in isolation in `components/ui/__tests__/live-region.test.tsx`.
 
 ---
 
@@ -224,6 +248,7 @@ Covered cases:
 - ARIA attributes on `progressbar`: `aria-valuenow`, `aria-valuemin`, `aria-valuemax`, `aria-label`
 - Stat strip: each stat independent; locale formatting; absent strip when no stats
 - Share button: rendered / absent; click handler fires; live region present
+- **MarketDetail status-change announcements (Issue #495):** live region re-announces on `status` transitions (`open` → `closing_soon`, full lifecycle through `resolved`, cancellation from a non-terminal status), and keeps volume/participant text in sync alongside a status change. The underlying `LiveRegion` primitive is additionally unit-tested in isolation at `components/ui/__tests__/live-region.test.tsx` (debounced announce, re-announce on message change, stable/no-flicker on identical message, empty message, unmount cleanup, `data-testid` passthrough).
 - Accessibility: `region` landmark, `aria-labelledby`, `aria-label` on button
 - StatusBadge integration: all five status values
 - `StatPill` helper: label and value render; icon slot rendered

@@ -18,12 +18,15 @@ import { WhatsNewDrawer } from "@/components/changelog/WhatsNewDrawer";
 import { getNetworkTint } from "@/lib/network-tint";
 import { useEffect } from "react";
 import { useQuietHours } from "@/lib/quiet-hours";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { Search, Sun, Moon, TrendingUp, PieChart, BarChart, Shield, BookOpen } from "lucide-react";
 
 const NAV_ITEMS = [
-  { name: "Markets", href: "/markets", icon: "trending_up" },
-  { name: "Portfolio", href: "/portfolio", icon: "pie_chart" },
-  { name: "Analytics", href: "/analytics", icon: "bar_chart" },
-  { name: "Admin", href: "/admin", icon: "admin_panel_settings" },
+  { name: "Markets", href: "/markets", icon: TrendingUp },
+  { name: "My Bets", href: "/bets", icon: PieChart },
+  { name: "Claims", href: "/claims", icon: Shield },
+  { name: "Leaderboard", href: "/leaderboard", icon: BarChart },
+  { name: "Docs", href: "/docs", icon: BookOpen },
 ];
 
 export function Navbar() {
@@ -37,6 +40,7 @@ export function Navbar() {
   const { theme, setTheme } = useTheme();
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
   const { active: quietHoursActive } = useQuietHours();
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
     localStorage.setItem("predictify_network", network);
@@ -65,7 +69,7 @@ export function Navbar() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`text-sm transition-all duration-300 font-medium ${
+                    className={`text-sm font-medium ${reducedMotion ? "" : "transition-all duration-300"} ${
                       isActive
                         ? "pb-1"
                         : "text-slate-400 hover:text-slate-200"
@@ -83,10 +87,10 @@ export function Navbar() {
           </div>
           <div className="flex items-center gap-4">
             <div className="relative group hidden lg:block">
-              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg" aria-hidden="true">search</span>
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} aria-hidden="true" />
               <input
                 id="navbar-search"
-                className="bg-[#192540] border-none rounded-xl pl-10 pr-4 py-2 text-sm w-64 focus:ring-1 focus:ring-cyan-400 transition-all bg-opacity-40 text-white placeholder-slate-400"
+                className={`bg-[#192540] border-none rounded-xl pl-10 pr-4 py-2 text-sm w-64 focus:ring-1 focus:ring-cyan-400 bg-opacity-40 text-white placeholder-slate-400 ${reducedMotion ? "" : "transition-all"}`}
                 placeholder="Search markets..."
                 type="search"
                 aria-label="Search markets"
@@ -104,12 +108,12 @@ export function Navbar() {
             ) : connected ? (
               <div className="flex items-center gap-2">
                 <WalletBalance />
-                <WalletMenu network={network} />
+                <WalletMenu />
               </div>
             ) : (
               <button 
                 onClick={() => setIsWalletModalOpen(true)}
-                className="bg-gradient-to-br from-[#69daff] to-[#00cffc] text-[#004a5d] font-bold px-6 py-2.5 rounded-xl text-sm active:scale-95 duration-150 transition-all shadow-lg shadow-[#69daff]/10"
+                className={`bg-gradient-to-br from-[#69daff] to-[#00cffc] text-[#004a5d] font-bold px-6 py-2.5 rounded-xl text-sm shadow-lg shadow-[#69daff]/10 ${reducedMotion ? "" : "active:scale-95 duration-150 transition-all"}`}
               >
                 Connect Wallet
               </button>
@@ -117,10 +121,10 @@ export function Navbar() {
             
             <button
               onClick={toggleTheme}
-              className="relative text-slate-400 hover:text-white transition-colors flex items-center justify-center p-2 rounded-lg hover:bg-slate-800"
+              className={`relative text-slate-400 hover:text-white flex items-center justify-center p-2 rounded-lg hover:bg-slate-800 ${reducedMotion ? "" : "transition-colors"}`}
               aria-label={`${theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}${quietHoursActive ? '. Quiet hours active' : ''}`}
             >
-              <span className="material-symbols-outlined" aria-hidden="true">{theme === 'dark' ? 'light_mode' : 'dark_mode'}</span>
+              {theme === 'dark' ? <Sun size={24} aria-hidden="true" /> : <Moon size={24} aria-hidden="true" />}
               {quietHoursActive ? (
                 <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-cyan-300 ring-2 ring-slate-950" aria-hidden="true" />
               ) : null}
@@ -172,21 +176,19 @@ export function Navbar() {
               aria-current={isActive ? "page" : undefined}
               className={
                 isActive
-                  ? "flex flex-col items-center justify-center rounded-xl px-3 min-h-[44px] min-w-[44px] py-1 transition-all"
-                  : "flex flex-col items-center justify-center text-slate-500 hover:text-cyan-200 min-h-[44px] min-w-[44px] py-1 transition-all"
+                  ? "flex flex-col items-center justify-center rounded-xl px-3 min-h-[44px] min-w-[44px] py-1" + (reducedMotion ? "" : " transition-all")
+                  : "flex flex-col items-center justify-center text-slate-500 hover:text-cyan-200 min-h-[44px] min-w-[44px] py-1" + (reducedMotion ? "" : " transition-all")
               }
               style={isActive ? {
                 backgroundColor: activeTint.bg,
                 color: activeTint.tint
               } : {}}
             >
-              <span
+              <item.icon
                 aria-hidden="true"
-                className="material-symbols-outlined text-[20px]"
-                style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}
-              >
-                {item.icon}
-              </span>
+                size={20}
+                className={isActive ? "fill-current" : ""}
+              />
               <span className="text-[10px] font-medium font-body mt-0.5">
                 {item.name}
               </span>

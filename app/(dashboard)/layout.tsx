@@ -5,9 +5,10 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Navbar } from "@/components/navbar/Navbar";
 import { Breadcrumbs } from "@/components/navbar/Breadcrumbs";
+import { MobileBottomTabs } from "@/components/navbar/MobileBottomTabs";
 import { ConnectWalletModal } from "@/components/connect-wallet-modal";
 import { getBreadcrumbsForPath } from "@/lib/breadcrumbs";
-import { MobileBottomTabs } from "@/components/navbar/MobileBottomTabs";
+import { ErrorBoundary } from "@/components/error-boundary";
 
 export default function DashboardLayout({
   children,
@@ -42,7 +43,7 @@ export default function DashboardLayout({
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#060e20]">
+    <div className="flex min-h-screen flex-col bg-background">
       <ConnectWalletModal
         isOpen={isWalletModalOpen}
         onOpenChange={setIsWalletModalOpen}

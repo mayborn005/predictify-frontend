@@ -11,6 +11,7 @@ import { ClaimShareProvider } from "@/context/ClaimShareContext";
 import { GlobalLiveRegion } from "@/app/components/GlobalLiveRegion";
 import { RouteDocumentTitle } from "@/app/hooks/useDocumentTitle";
 import { LangAttribute } from "@/app/i18n/LangAttribute";
+import { NotificationStreamConnector } from "@/components/notification-stream-connector";
 
 interface ProvidersProps {
   children: ReactNode;
@@ -21,8 +22,6 @@ interface ProvidersProps {
  * Includes ErrorBoundary, ThemeProvider, WalletProvider, and Toaster
  */
 export function Providers({ children }: ProvidersProps) {
-  // Initialize global shortcut for hide balances toggle
-  useHideBalancesShortcut();
   return (
     <ErrorBoundary>
       <RouteDocumentTitle />
@@ -36,7 +35,9 @@ export function Providers({ children }: ProvidersProps) {
         themes={["light", "dark", "high-contrast"]}
       >
         <PrivacyProvider>
+          <PrivacyShortcut />
           <WalletProvider>
+            <NotificationStreamConnector />
             <ClaimShareProvider>
               {children}
             </ClaimShareProvider>
@@ -49,6 +50,9 @@ export function Providers({ children }: ProvidersProps) {
   );
 }
 
-
+function PrivacyShortcut() {
+  useHideBalancesShortcut();
+  return null;
+}
 
 
